@@ -26,7 +26,7 @@ export const AccordionTrigger: React.FC<
 			)}
 			{...props}
 		>
-			{props.asChild ? (
+			{(props.asChild ?? false) ? (
 				children
 			) : (
 				<>

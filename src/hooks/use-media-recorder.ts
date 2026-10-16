@@ -9,24 +9,29 @@ export const useMediaRecorder = (
 	canvas: React.RefObject<HTMLCanvasElement | null>,
 	fps = 30,
 ) => {
-	const [isRecording, setRecording] = React.useState(false);
-	const [recorder, setRecorder] = React.useState<Recorder | null>();
+	const [recording, setRecording] = React.useState(false);
+	const recorderRef = React.useRef<Recorder | null>(null);
 	React.useEffect(() => {
 		if (!canvas.current) {
 			return;
 		}
-		setRecorder(createRecorder(canvas.current, fps));
+		recorderRef.current = createRecorder(canvas.current, fps);
+		return () => {
+			recorderRef.current = null;
+		};
 	}, [canvas, fps]);
 	const start = React.useCallback(() => {
+		const recorder = recorderRef.current;
 		if (recorder) {
 			recorder.start();
 			setRecording(true);
 		} else {
 			throw new Error("Recorder not yet created!");
 		}
-	}, [recorder]);
+	}, []);
 	const isMounted = useIsMounted();
 	const stop = React.useCallback(async () => {
+		const recorder = recorderRef.current;
 		if (recorder) {
 			const stopPromise = recorder.stop();
 			const result = await stopPromise;
@@ -36,7 +41,7 @@ export const useMediaRecorder = (
 			return result;
 		}
 		throw new Error("Recorder not yet stopped!");
-	}, [isMounted, recorder]);
+	}, [isMounted]);
 
-	return { start, isRecording, stop };
+	return { isRecording: recording, start, stop };
 };

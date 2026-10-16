@@ -25,8 +25,8 @@ const getElementWithContext = <T extends ElementType>(
 	size: CanvasSize,
 	initialState?: ElementPropsMapping[T],
 ): Element<T> => ({
+	data: getInitialState({ initialState, size }),
 	id: v4(),
-	data: getInitialState({ size, initialState }),
 });
 
 export const useElementControl = (
@@ -39,7 +39,15 @@ export const useElementControl = (
 		useLocalStorageValue<ElementsPreset<ElementType> | null>("last_used", {
 			defaultValue: null,
 		});
-	const [elements, setElements] = React.useState<Element<ElementType>[]>([]);
+	const [elements, setElements] = React.useState<Element<ElementType>[]>(() =>
+		(preset?.descriptions ?? []).map((description) =>
+			getElementWithContext(
+				getInitialStateByType(description.type),
+				canvasSize,
+				description,
+			),
+		),
+	);
 
 	const overwriteElementDescriptions = React.useCallback(
 		(descriptions: ElementPropsMapping[ElementType][]) => {
@@ -59,27 +67,17 @@ export const useElementControl = (
 	const isFirstMountState = useFirstMountState();
 	React.useEffect(() => {
 		if (isFirstMountState) {
-			if (preset) {
-				// Если это эффект на маунте и есть сохраненный в localStorage пресет - загружаем его.
-				overwriteElementDescriptions(preset.descriptions);
-			}
-		} else {
-			const nextPreset = {
-				descriptions: elements.map((element) => element.data),
-			};
-			if (isDeepEqual(nextPreset, preset)) {
-				return;
-			}
-			// Если это эффект не на маунте то сохраняем в localStorage текущий пресет.
-			setPreset(nextPreset);
+			return;
 		}
-	}, [
-		elements,
-		isFirstMountState,
-		overwriteElementDescriptions,
-		preset,
-		setPreset,
-	]);
+		const nextPreset = {
+			descriptions: elements.map((element) => element.data),
+		};
+		if (isDeepEqual(nextPreset, preset)) {
+			return;
+		}
+		// Если это эффект не на маунте то сохраняем в localStorage текущий пресет.
+		setPreset(nextPreset);
+	}, [elements, isFirstMountState, preset, setPreset]);
 
 	const modifyElementById = React.useCallback(
 		<T extends ElementType>(
@@ -93,7 +91,7 @@ export const useElementControl = (
 				if (elementIndex === -1) {
 					throw new Error(`Element ${id} not found!`);
 				}
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				// oxlint-disable-next-line typescript/no-non-null-assertion
 				const currElement = prevElements[elementIndex]!;
 				const nextData = updateSetStateAction(
 					setStateAction,
@@ -142,14 +140,12 @@ export const useElementControl = (
 	}, [setElements]);
 
 	return {
-		elements,
-		preset,
-
 		createElement,
-		modifyElementById,
 		deleteElementById,
-
+		elements,
+		modifyElementById,
 		overwrite: overwriteAll,
+		preset,
 		reset: resetAll,
 	};
 };

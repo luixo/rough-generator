@@ -19,13 +19,13 @@ import { NumberWithVariation } from "./number-with-variation";
 
 const getConstraint = (size: number): VariationConfig<Constraint> => ({
 	base: {
-		min: -size / 2,
 		max: size / 2,
+		min: -size / 2,
 		step: 10,
 	},
 	variation: {
-		min: 0,
 		max: size * 0.5,
+		min: 0,
 		step: 2,
 	},
 });

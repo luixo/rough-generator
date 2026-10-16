@@ -16,7 +16,9 @@ export const usePresets = () => {
 			set((values) => [...(values || []), { id: v4(), ...preset }]);
 		},
 		removePreset: (presetId: string) => {
-			set((values) => (values || []).filter((value) => value.id !== presetId));
+			set((values) =>
+				(values || []).filter((lookupValue) => lookupValue.id !== presetId),
+			);
 		},
 	};
 };

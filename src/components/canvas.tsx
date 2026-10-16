@@ -14,10 +14,9 @@ export const Canvas: React.FC<Props> = ({ canvasRef }) => {
 	const canvasSize = useStore(canvasSizeStore);
 	const wrapperRef = React.useRef<HTMLDivElement>(null);
 	const [maxWidth, setMaxWidth] = React.useState(canvasSize.width);
-	const [maxHeight] = React.useState(canvasSize.height);
 	const { width: windowWidth } = useWindowSize();
 	useMountEffect(() => {
-		canvasSizeStore.setState({ height: maxHeight, width: maxWidth });
+		canvasSizeStore.setState({ height: canvasSize.height, width: maxWidth });
 	});
 	React.useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -30,6 +29,7 @@ export const Canvas: React.FC<Props> = ({ canvasRef }) => {
 			...state,
 			width: nextMaxWidth,
 		}));
+		// oxlint-disable-next-line react/exhaustive-effect-dependencies
 	}, [windowWidth]);
 	return (
 		<div ref={wrapperRef} className="flex flex-col gap-4">
@@ -48,7 +48,7 @@ export const Canvas: React.FC<Props> = ({ canvasRef }) => {
 			/>
 			<div
 				className="self-center"
-				style={{ width: canvasSize.width, height: canvasSize.height }}
+				style={{ height: canvasSize.height, width: canvasSize.width }}
 			>
 				<div className="pointer-events-none z-10 mt-1 box-content origin-top-left overflow-auto border border-black bg-white">
 					{/* Если убрать className - внешние элементы будут считать его высоту важной для расчета своей */}

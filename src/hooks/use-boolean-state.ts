@@ -8,5 +8,5 @@ export const useBooleanState = (initialValue = false) => {
 		() => setValue((prev) => !prev),
 		[setValue],
 	);
-	return [value, { setTrue, setFalse, switchValue }] as const;
+	return [value, { setFalse, setTrue, switchValue }] as const;
 };

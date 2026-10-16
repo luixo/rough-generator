@@ -3,7 +3,7 @@ import React from "react";
 export const useRaf = (
 	callback: (timeElapsed: number) => void,
 	isActive: boolean,
-	limitFps?: number,
+	limitFps = 0,
 ): void => {
 	const savedCallback = React.useRef<(timeElapsed: number) => void>(null);
 	React.useLayoutEffect(() => {
@@ -13,6 +13,11 @@ export const useRaf = (
 	React.useLayoutEffect(() => {
 		let lastTime = performance.now();
 		let rafHandler = 0;
+
+		const loop = () => {
+			// oxlint-disable-next-line no-use-before-define
+			rafHandler = requestAnimationFrame(tick);
+		};
 
 		const tick = (now: number) => {
 			const timeElapsed = now - lastTime;
@@ -27,10 +32,6 @@ export const useRaf = (
 			savedCallback.current?.(timeElapsed);
 			loop();
 		};
-
-		function loop() {
-			rafHandler = requestAnimationFrame(tick);
-		}
 
 		if (isActive) {
 			loop();

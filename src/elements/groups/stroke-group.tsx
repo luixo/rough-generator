@@ -18,14 +18,14 @@ import { NumberWithVariation } from "./number-with-variation";
 
 const getConstraint = (): VariationConfig<Constraint> => ({
 	base: {
+		max: 5,
 		min: 0.5,
 		step: 1,
-		max: 5,
 	},
 	variation: {
+		max: 2,
 		min: 0.1,
 		step: 0.2,
-		max: 2,
 	},
 });
 
@@ -86,17 +86,17 @@ StrokeGroup.getInitialState = ({ initialState }) => {
 				base: 2,
 				variation: 0.5,
 			});
-	const multiline = initialState?.multiline || true;
+	const multiline = initialState?.multiline ?? true;
 	const constraint = getConstraint();
 	return {
 		color,
-		width: applyVariatedConstraint(width, constraint),
 		multiline,
+		width: applyVariatedConstraint(width, constraint),
 	};
 };
 
 StrokeGroup.getRoughConfig = (state) => ({
+	disableMultiStrokeFill: !state.multiline,
 	stroke: state.color,
 	strokeWidth: state.width.value,
-	disableMultiStrokeFill: !state.multiline,
 });

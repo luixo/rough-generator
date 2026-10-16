@@ -21,7 +21,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { type CanvasRenderer, RoughContext } from "@/contexts/rough-context";
+import { RoughContext } from "@/contexts/rough-context";
+import type { CanvasRenderer } from "@/contexts/rough-context";
 import {
 	Circle,
 	getInitialState as getInitialCircleState,
@@ -53,52 +54,53 @@ const elementTypes = keys(elementsRecord);
 
 const getNameByType = (type: ElementType): string => {
 	switch (type) {
-		case "circle":
+		case "circle": {
 			return "круг";
-		case "double-circle":
+		}
+		case "double-circle": {
 			return "обода";
-		case "spring":
+		}
+		case "spring": {
 			return "пружинка";
+		}
 	}
 };
-
-const getInitialStateByType = (type: ElementType) => {
+const getInitialStateByType = <T extends ElementType>(type: T) => {
 	switch (type) {
-		case "circle":
-			return getInitialCircleState as GetInitialState<
-				ElementPropsMapping["circle"]
-			>;
-		case "double-circle":
+		case "circle": {
+			return getInitialCircleState;
+		}
+		case "double-circle": {
 			return getInitialDoubleCircleState as GetInitialState<
 				ElementPropsMapping["double-circle"]
 			>;
-		case "spring":
+		}
+		case "spring": {
 			return getInitialSpringState as GetInitialState<
 				ElementPropsMapping["spring"]
 			>;
+		}
 	}
 };
 
 const getRenderedByType = (type: ElementType) => {
 	switch (type) {
-		case "circle":
+		case "circle": {
 			return Circle.renderFigure;
-		case "double-circle":
+		}
+		case "double-circle": {
 			return DoubleCircle.renderFigure;
-		case "spring":
+		}
+		case "spring": {
 			return Spring.renderFigure;
+		}
 	}
 };
 
-const getComponentByType = (type: ElementType) => {
-	switch (type) {
-		case "circle":
-			return Circle;
-		case "double-circle":
-			return DoubleCircle;
-		case "spring":
-			return Spring;
-	}
+const componentsByType = {
+	circle: Circle,
+	"double-circle": DoubleCircle,
+	spring: Spring,
 };
 
 type RenderedElementProps<T extends ElementType> = {
@@ -125,7 +127,7 @@ const RenderedElement = <T extends ElementType>({
 			setFalse: closeRemoveDialog,
 		},
 	] = useBooleanState();
-	const Component = getComponentByType(data.type);
+	const Component = componentsByType[data.type];
 	const setState = React.useCallback(
 		(setStateAction: React.SetStateAction<ElementPropsMapping[T]>) => {
 			modifyElementById(id, setStateAction);
@@ -138,8 +140,8 @@ const RenderedElement = <T extends ElementType>({
 	);
 	const props = {
 		...data,
-		setState,
 		onRemoveDialogOpen: openRemoveDialog,
+		setState,
 	} as unknown as React.ComponentProps<typeof Component>;
 	return (
 		<>
@@ -167,7 +169,7 @@ const RenderedElement = <T extends ElementType>({
 export const ControlPanel: React.FC = () => {
 	const roughContext = React.useContext(RoughContext);
 	const [selectedElementType, setSelectedElementType] =
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		// oxlint-disable-next-line typescript/no-non-null-assertion
 		React.useState<ElementType>(elementTypes[0]!);
 	const {
 		elements,
@@ -178,9 +180,9 @@ export const ControlPanel: React.FC = () => {
 		overwrite,
 		reset,
 	} = useElementControl(
-		// TODO: fix
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		getInitialStateByType as any,
+		getInitialStateByType as unknown as <T extends ElementType>(
+			type: T,
+		) => GetInitialState<ElementPropsMapping[ElementType]>,
 	);
 	const canvasSize = useStore(canvasSizeStore);
 
@@ -237,6 +239,8 @@ export const ControlPanel: React.FC = () => {
 						</SelectContent>
 					</Select>
 					<Button
+						// False positive: createElement is not from react here
+						// oxlint-disable-next-line react/no-unstable-nested-components
 						onClick={() => createElement(selectedElementType)}
 						title="Добавить"
 					>

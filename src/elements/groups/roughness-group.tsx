@@ -6,9 +6,9 @@ import { applyConstraint, random } from "@/utils/math";
 import { RoughElementControlGroup } from "@/views/rough-element-control-group";
 
 const getConstraint = (): Constraint => ({
+	max: 8,
 	min: 0,
 	step: 0.2,
-	max: 8,
 });
 
 export type RoughnessState = {
@@ -27,14 +27,14 @@ export const RoughnessGroup: SubElementComponent<RoughnessState> = ({
 				{...constraint}
 				className="w-full"
 				value={[amount]}
-				onValueChange={([nextValue]) => setAmount(Number(nextValue))}
+				onValueChange={([nextValue]) => setAmount(nextValue)}
 			/>
 		</RoughElementControlGroup>
 	);
 };
 
 RoughnessGroup.getInitialState = ({ initialState }) => {
-	const amount = initialState ? initialState?.amount : 1 + random(2);
+	const amount = initialState ? initialState.amount : 1 + random(2);
 	const constraint = getConstraint();
 	return {
 		amount: applyConstraint(amount, constraint),

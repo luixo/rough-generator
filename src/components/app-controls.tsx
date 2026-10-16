@@ -55,8 +55,8 @@ export const AppControls: React.FC<Props> = ({ canvasRef }) => {
 		);
 	}, [canvasRef, saveData]);
 
-	const [isAnimating, setAnimating] = React.useState(false);
-	useRaf(forceRefresh, isAnimating, limitFps);
+	const [animating, setAnimating] = React.useState(false);
+	useRaf(forceRefresh, animating, limitFps);
 
 	const { start, stop, isRecording } = useMediaRecorder(canvasRef);
 	const isMounted = useIsMounted();
@@ -76,14 +76,14 @@ export const AppControls: React.FC<Props> = ({ canvasRef }) => {
 				<RedoIcon />
 			</Button>
 			<Button
-				onClick={() => easyModeStore.setState((easyMode) => !easyMode)}
+				onClick={() => easyModeStore.setState((prev) => !prev)}
 				title={easyMode ? "Сделать сложнее" : "Сделать проще"}
 			>
 				{easyMode ? <ExpandIcon /> : <ShrinkIcon />}
 			</Button>
 			<Button
 				variant={autoRender ? "default" : "secondary"}
-				onClick={() => autoRenderStore.setState((autoRender) => autoRender)}
+				onClick={() => autoRenderStore.setState((prev) => prev)}
 				title={`${
 					autoRender ? "Выключить" : "Включить"
 				} перерисовку при изменении чего угодно`}
@@ -95,20 +95,22 @@ export const AppControls: React.FC<Props> = ({ canvasRef }) => {
 			</Button>
 			<Button
 				onClick={() => setAnimating((x) => !x)}
-				title={isAnimating ? "Выключить анимацию" : "Включить анимацию"}
+				title={animating ? "Выключить анимацию" : "Включить анимацию"}
 			>
-				{isAnimating ? <PauseIcon /> : <PlayIcon />}
+				{animating ? <PauseIcon /> : <PlayIcon />}
 			</Button>
-			{isAnimating ? (
+			{animating ? (
 				<Button
-					onClick={onVideoClick}
+					onClick={() => {
+						void onVideoClick();
+					}}
 					className={isRecording ? "animate-pulse border shadow-sm" : undefined}
 					title={isRecording ? "Идет запись.." : "Начать запись!"}
 				>
 					<RecordIcon />
 				</Button>
 			) : null}
-			{isAnimating ? (
+			{animating ? (
 				<div className="fixed top-3 left-3 flex w-60 rounded-md bg-slate-300 p-3">
 					<span className="mr-2 text-black">FPS</span>
 					<Slider

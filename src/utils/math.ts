@@ -28,8 +28,8 @@ export const getValueWithVarConfig = (
 	bav: VariationConfig<number>,
 ): ValueWithVariationConfig<number> => ({
 	base: bav.base,
-	variation: bav.variation,
 	value: evaluateConfig(bav),
+	variation: bav.variation,
 });
 
 export const applyVariatedConstraint = (
@@ -37,8 +37,8 @@ export const applyVariatedConstraint = (
 	constraint: VariationConfig<Constraint>,
 ): ValueWithVariationConfig<number> => ({
 	base: applyConstraint(input.base, constraint.base),
-	variation: applyConstraint(input.variation, constraint.variation),
 	value: applyConstraint(input.value, constraint.base),
+	variation: applyConstraint(input.variation, constraint.variation),
 });
 
 export const rotatePoints = (
@@ -65,7 +65,7 @@ type BoundingBox = {
 };
 
 export const getBoundingBox = (points: [number, number][]): BoundingBox => {
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	// oxlint-disable-next-line typescript/no-non-null-assertion
 	const [firstX, firstY] = points[0]!;
 	const maxMins = points.reduce<
 		Record<"minX" | "minY" | "maxX" | "maxY", number>
@@ -86,17 +86,17 @@ export const getBoundingBox = (points: [number, number][]): BoundingBox => {
 			return acc;
 		},
 		{
-			minX: firstX,
-			minY: firstY,
 			maxX: firstX,
 			maxY: firstY,
+			minX: firstX,
+			minY: firstY,
 		},
 	);
 	return {
-		x: maxMins.minX,
-		y: maxMins.minY,
 		height: maxMins.maxY - maxMins.minY,
 		width: maxMins.maxX - maxMins.minX,
+		x: maxMins.minX,
+		y: maxMins.minY,
 	};
 };
 

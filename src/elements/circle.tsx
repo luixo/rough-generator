@@ -37,7 +37,7 @@ import type { RoughnessState } from "./groups/roughness-group";
 import { StrokeGroup } from "./groups/stroke-group";
 import type { StrokeState } from "./groups/stroke-group";
 
-const getInitialTitle = (title?: string) => title || "Круг";
+const getInitialTitle = (title?: string) => title ?? "Круг";
 
 const getRadiusConstraint = (
 	canvasSize: CanvasSize,
@@ -46,14 +46,14 @@ const getRadiusConstraint = (
 	const avgSize = (width + height) / 2;
 	return {
 		base: {
+			max: Math.floor(avgSize * 0.3),
 			min: Math.ceil(avgSize * 0.01),
 			step: 10,
-			max: Math.floor(avgSize * 0.3),
 		},
 		variation: {
+			max: Math.floor(avgSize * 0.1),
 			min: 0,
 			step: 2,
-			max: Math.floor(avgSize * 0.1),
 		},
 	};
 };
@@ -146,36 +146,36 @@ export const getInitialState: GetInitialState<CircleConfig> = ({
 	size,
 	initialState,
 }) => ({
-	type: "circle",
 	coordinates: CoordinatesGroup.getInitialState({
-		size,
 		initialState: initialState?.coordinates,
-	}),
-	fill: FillGroup.getInitialState({
 		size,
-		initialState: initialState?.fill,
-	}),
-	stroke: StrokeGroup.getInitialState({
-		size,
-		initialState: initialState?.stroke,
-	}),
-	roughness: RoughnessGroup.getInitialState({
-		size,
-		initialState: initialState?.roughness,
-	}),
-	title: getInitialTitle(initialState?.title),
-	radius: getInitialRadius({
-		size,
-		initialState: initialState?.radius,
-	}),
-	fixed: FixedGroup.getInitialState({
-		size,
-		initialState: initialState?.fixed,
 	}),
 	curve: CurveGroup.getInitialState({
-		size,
 		initialState: initialState?.curve,
+		size,
 	}),
+	fill: FillGroup.getInitialState({
+		initialState: initialState?.fill,
+		size,
+	}),
+	fixed: FixedGroup.getInitialState({
+		initialState: initialState?.fixed,
+		size,
+	}),
+	radius: getInitialRadius({
+		initialState: initialState?.radius,
+		size,
+	}),
+	roughness: RoughnessGroup.getInitialState({
+		initialState: initialState?.roughness,
+		size,
+	}),
+	stroke: StrokeGroup.getInitialState({
+		initialState: initialState?.stroke,
+		size,
+	}),
+	title: getInitialTitle(initialState?.title),
+	type: "circle",
 });
 
 Circle.renderFigure = (

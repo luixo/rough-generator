@@ -34,7 +34,7 @@ import type { RoughnessState } from "./groups/roughness-group";
 import { StrokeGroup } from "./groups/stroke-group";
 import type { StrokeState } from "./groups/stroke-group";
 
-const getInitialTitle = (title?: string) => title || "Два обода";
+const getInitialTitle = (title?: string) => title ?? "Два обода";
 
 const getConstraints = (
 	canvasSize: CanvasSize,
@@ -44,26 +44,26 @@ const getConstraints = (
 	return {
 		radius: {
 			base: {
+				max: Math.ceil(avgSize * 0.3),
 				min: Math.ceil(avgSize * 0.01),
 				step: 10,
-				max: Math.ceil(avgSize * 0.3),
 			},
 			variation: {
+				max: Math.floor(avgSize * 0.1),
 				min: 0,
 				step: 2,
-				max: Math.floor(avgSize * 0.1),
 			},
 		},
 		radiusCoefficient: {
 			base: {
+				max: 1,
 				min: 0.3,
 				step: 0.05,
-				max: 1,
 			},
 			variation: {
+				max: 0.3,
 				min: 0,
 				step: 0.001,
-				max: 0.3,
 			},
 		},
 	};
@@ -185,36 +185,36 @@ export const getInitialState = ({
 	size: CanvasSize;
 	initialState?: DoubleCircleConfig;
 }): DoubleCircleConfig => ({
-	type: "double-circle",
 	coordinates: CoordinatesGroup.getInitialState({
-		size,
 		initialState: initialState?.coordinates,
-	}),
-	stroke: StrokeGroup.getInitialState({
 		size,
-		initialState: initialState?.stroke,
-	}),
-	roughness: RoughnessGroup.getInitialState({
-		size,
-		initialState: initialState?.roughness,
-	}),
-	title: getInitialTitle(initialState?.title),
-	radius: getInitialRadius({
-		size,
-		initialState: initialState?.radius,
-	}),
-	radiusCoefficient: getInitialRadiusCoefficient({
-		size,
-		initialState: initialState?.radiusCoefficient,
-	}),
-	fixed: FixedGroup.getInitialState({
-		size,
-		initialState: initialState?.fixed,
 	}),
 	curve: CurveGroup.getInitialState({
-		size,
 		initialState: initialState?.curve,
+		size,
 	}),
+	fixed: FixedGroup.getInitialState({
+		initialState: initialState?.fixed,
+		size,
+	}),
+	radius: getInitialRadius({
+		initialState: initialState?.radius,
+		size,
+	}),
+	radiusCoefficient: getInitialRadiusCoefficient({
+		initialState: initialState?.radiusCoefficient,
+		size,
+	}),
+	roughness: RoughnessGroup.getInitialState({
+		initialState: initialState?.roughness,
+		size,
+	}),
+	stroke: StrokeGroup.getInitialState({
+		initialState: initialState?.stroke,
+		size,
+	}),
+	title: getInitialTitle(initialState?.title),
+	type: "double-circle",
 });
 
 DoubleCircle.renderFigure = (

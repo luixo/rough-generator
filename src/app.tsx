@@ -24,14 +24,14 @@ const useCanvas = (): CanvasResult => {
 	const autoRender = useStore(autoRenderStore);
 
 	const [counter, setCounter] = React.useState(0);
-	const [forcedCounter, setForcedUpdateCounter] = React.useState(0);
+	const [forcedCounter, setForcedCounter] = React.useState(0);
 	const refresh = React.useCallback(
 		() => setCounter((c) => c + 1),
 		[setCounter],
 	);
 	const forceRefresh = React.useCallback(
-		() => setForcedUpdateCounter((c) => c + 1),
-		[setForcedUpdateCounter],
+		() => setForcedCounter((c) => c + 1),
+		[setForcedCounter],
 	);
 
 	const { width, height } = canvasSize;
@@ -74,21 +74,25 @@ const useCanvas = (): CanvasResult => {
 		if (!roughCanvas) {
 			return;
 		}
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		// oxlint-disable-next-line typescript/no-non-null-assertion
 		const canvasContext = canvasRef.current!.getContext("2d")!;
 		canvasContext.fillStyle = "white";
 		canvasContext.fillRect(0, 0, width, height);
-		renderers.forEach((renderer) => renderer(roughCanvas));
+		for (const renderer of renderers) {
+			renderer(roughCanvas);
+		}
 		return () => {
 			canvasContext.clearRect(0, 0, width, height);
 		};
+		// This is expected: counter helps us redraw canvas
+		// oxlint-disable-next-line react/exhaustive-effect-dependencies
 	}, [counter, forcedCounter, height, renderers, roughCanvas, width]);
 
 	return {
+		addRenderer,
 		canvasRef,
 		forceRefresh,
 		forcedCounter,
-		addRenderer,
 	};
 };
 

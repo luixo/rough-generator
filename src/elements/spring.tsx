@@ -40,45 +40,45 @@ const getConstraints = (): Record<
 	"scale" | "turns" | "angle",
 	VariationConfig<Constraint>
 > => ({
-	scale: {
+	angle: {
 		base: {
-			min: 1,
-			step: 1,
-			max: 100,
+			max: 365,
+			min: 0,
+			step: 3,
 		},
 		variation: {
+			max: 180,
+			min: 0,
+			step: 1,
+		},
+	},
+	scale: {
+		base: {
+			max: 100,
+			min: 1,
+			step: 1,
+		},
+		variation: {
+			max: 3,
 			min: 0,
 			step: 0.2,
-			max: 3,
 		},
 	},
 	turns: {
 		base: {
+			max: 8,
 			min: 3,
 			step: 1,
-			max: 8,
 		},
 		variation: {
+			max: 4,
 			min: 0,
 			step: 0.2,
-			max: 4,
-		},
-	},
-	angle: {
-		base: {
-			min: 0,
-			step: 3,
-			max: 365,
-		},
-		variation: {
-			min: 0,
-			step: 1,
-			max: 180,
 		},
 	},
 });
 
-const getInitialTitle = (title?: string): string => title || "Пружинка";
+const getInitialTitle = (title?: string): string => title ?? "Пружинка";
 
 const getInitialScale = (
 	state?: ValueWithVariationConfig<number>,
@@ -208,31 +208,31 @@ export const getInitialState = ({
 	size: CanvasSize;
 	initialState?: SpringConfig;
 }): SpringConfig => ({
-	type: "spring",
+	angle: getInitialAngle(initialState?.angle),
 	coordinates: CoordinatesGroup.getInitialState({
-		size,
 		initialState: initialState?.coordinates,
-	}),
-	stroke: StrokeGroup.getInitialState({
 		size,
-		initialState: initialState?.stroke,
-	}),
-	roughness: RoughnessGroup.getInitialState({
-		size,
-		initialState: initialState?.roughness,
-	}),
-	title: getInitialTitle(initialState?.title),
-	fixed: FixedGroup.getInitialState({
-		size,
-		initialState: initialState?.fixed,
 	}),
 	curve: CurveGroup.getInitialState({
-		size,
 		initialState: initialState?.curve,
+		size,
+	}),
+	fixed: FixedGroup.getInitialState({
+		initialState: initialState?.fixed,
+		size,
+	}),
+	roughness: RoughnessGroup.getInitialState({
+		initialState: initialState?.roughness,
+		size,
 	}),
 	scale: getInitialScale(initialState?.scale),
+	stroke: StrokeGroup.getInitialState({
+		initialState: initialState?.stroke,
+		size,
+	}),
+	title: getInitialTitle(initialState?.title),
 	turns: getInitialTurns(initialState?.turns),
-	angle: getInitialAngle(initialState?.angle),
+	type: "spring",
 });
 
 Spring.renderFigure = (

@@ -29,6 +29,8 @@ export const FixedGroup: SubElementComponent<FixedState> = ({
 		if (!isSeedFixed) {
 			setSeed(getRandomSeed());
 		}
+		// This is expected: we're regenerating with new seed
+		// oxlint-disable-next-line react/exhaustive-effect-dependencies
 	}, [isSeedFixed, setSeed, roughContext.forcedCounter]);
 
 	return (
@@ -56,16 +58,16 @@ export const FixedGroup: SubElementComponent<FixedState> = ({
 };
 
 FixedGroup.getInitialState = ({ initialState }) => {
-	const seed = initialState?.seed || getRandomSeed();
-	const variation = initialState?.variation || false;
+	const seed = initialState?.seed ?? getRandomSeed();
+	const variation = initialState?.variation ?? false;
 	const isSeedFixed =
 		typeof initialState?.isSeedFixed === "boolean"
 			? initialState.isSeedFixed
 			: false;
 	return {
+		isSeedFixed,
 		seed,
 		variation,
-		isSeedFixed,
 	};
 };
 

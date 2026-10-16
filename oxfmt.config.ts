@@ -4,8 +4,8 @@ export default getFormatConfig({
 	ignorePatterns: ["dist/**", "public/**"],
 	imports: {
 		customGroups: [
-			{ groupName: "react", elementNamePattern: ["react"] },
-			{ groupName: "local", elementNamePattern: ["@"] },
+			{ elementNamePattern: ["react"], groupName: "react" },
+			{ elementNamePattern: ["@"], groupName: "local" },
 		],
 		groups: [
 			"react",

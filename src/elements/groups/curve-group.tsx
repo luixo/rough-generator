@@ -9,24 +9,24 @@ const getConstraints = (): Record<
 	"stepCount" | "fitting" | "tightness" | "bowing",
 	Constraint
 > => ({
-	stepCount: {
-		min: 3,
-		max: 25,
-		step: 1,
+	bowing: {
+		max: 1,
+		min: 0,
+		step: 0.05,
 	},
 	fitting: {
-		min: 0,
 		max: 1,
+		min: 0,
 		step: 0.05,
+	},
+	stepCount: {
+		max: 25,
+		min: 3,
+		step: 1,
 	},
 	tightness: {
-		min: 0,
 		max: 1,
-		step: 0.05,
-	},
-	bowing: {
 		min: 0,
-		max: 1,
 		step: 0.05,
 	},
 });
@@ -88,21 +88,21 @@ export const CurveGroup: SubElementComponent<CurveState> = ({
 
 CurveGroup.getInitialState = ({ initialState }) => {
 	const constraints = getConstraints();
-	const stepCount = initialState?.stepCount || 9;
-	const fitting = initialState?.fitting || 0.95;
-	const tightness = initialState?.tightness || 0;
-	const bowing = initialState?.bowing || 1;
+	const stepCount = initialState?.stepCount ?? 9;
+	const fitting = initialState?.fitting ?? 0.95;
+	const tightness = initialState?.tightness ?? 0;
+	const bowing = initialState?.bowing ?? 1;
 	return {
-		stepCount: applyConstraint(stepCount, constraints.stepCount),
-		fitting: applyConstraint(fitting, constraints.fitting),
-		tightness: applyConstraint(tightness, constraints.tightness),
 		bowing: applyConstraint(bowing, constraints.bowing),
+		fitting: applyConstraint(fitting, constraints.fitting),
+		stepCount: applyConstraint(stepCount, constraints.stepCount),
+		tightness: applyConstraint(tightness, constraints.tightness),
 	};
 };
 
 CurveGroup.getRoughConfig = (state) => ({
+	bowing: state.bowing,
 	curveFitting: state.fitting,
 	curveStepCount: state.stepCount,
 	curveTightness: state.tightness,
-	bowing: state.bowing,
 });

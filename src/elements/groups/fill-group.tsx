@@ -40,49 +40,49 @@ const getConstraints = (
 	return {
 		angle: {
 			base: {
+				max: 360,
 				min: 0,
 				step: 3,
-				max: 360,
 			},
 			variation: {
+				max: 360,
 				min: 0,
 				step: 0.1,
-				max: 360,
 			},
+		},
+		dashGap: {
+			max: avgSize * 0.01,
+			min: 0,
+			step: 1,
+		},
+		dashOffset: {
+			max: avgSize * 0.01,
+			min: 0,
+			step: 1,
 		},
 		gap: {
 			base: {
+				max: 50,
 				min: 0,
 				step: 1,
-				max: 50,
 			},
 			variation: {
+				max: 10,
 				min: 0,
 				step: 0.5,
-				max: 10,
 			},
 		},
 		weight: {
 			base: {
+				max: 10,
 				min: 0.1,
 				step: 1,
-				max: 10,
 			},
 			variation: {
+				max: 1,
 				min: 0,
 				step: 0.1,
-				max: 1,
 			},
-		},
-		dashOffset: {
-			min: 0,
-			step: 1,
-			max: avgSize * 0.01,
-		},
-		dashGap: {
-			min: 0,
-			step: 1,
-			max: avgSize * 0.01,
 		},
 	};
 };
@@ -97,12 +97,12 @@ export type HachureStyle =
 	| "zigzag-line";
 
 const HACHURES: Record<HachureStyle, string> = {
+	"cross-hatch": "крест-накрест",
+	dashed: "пунктир",
+	dots: "точки",
 	hachure: "штрих",
 	solid: "заливка",
 	zigzag: "зиг-заг",
-	"cross-hatch": "крест-накрест",
-	dots: "точки",
-	dashed: "пунктир",
 	"zigzag-line": "прямой зиг-заг",
 };
 
@@ -243,7 +243,7 @@ FillGroup.getInitialState = ({ size, initialState }) => {
 			});
 	const dashOffset = initialState ? initialState.dashOffset : avgSize * 0.01;
 	const dashGap = initialState ? initialState.dashGap : avgSize * 0.01;
-	const multiline = initialState?.multiline || true;
+	const multiline = initialState?.multiline ?? true;
 	const weight = initialState
 		? initialState.weight
 		: getValueWithVarConfig({
@@ -252,24 +252,24 @@ FillGroup.getInitialState = ({ size, initialState }) => {
 			});
 	const constraints = getConstraints(size);
 	return {
-		color,
-		style,
 		angle: applyVariatedConstraint(angle, constraints.angle),
-		gap: applyVariatedConstraint(gap, constraints.gap),
-		dashOffset: applyConstraint(dashOffset, constraints.dashOffset),
+		color,
 		dashGap: applyConstraint(dashGap, constraints.dashGap),
+		dashOffset: applyConstraint(dashOffset, constraints.dashOffset),
+		gap: applyVariatedConstraint(gap, constraints.gap),
 		multiline,
+		style,
 		weight,
 	};
 };
 
 FillGroup.getRoughConfig = (state) => ({
+	dashGap: state.dashGap,
+	dashOffset: state.dashOffset,
+	disableMultiStroke: !state.multiline,
 	fill: state.color,
 	fillStyle: state.style,
-	fillWeight: state.weight?.value,
-	dashOffset: state.dashOffset,
-	dashGap: state.dashGap,
-	disableMultiStroke: !state.multiline,
-	hachureGap: state.gap.value,
+	fillWeight: state.weight.value,
 	hachureAngle: state.angle.value,
+	hachureGap: state.gap.value,
 });

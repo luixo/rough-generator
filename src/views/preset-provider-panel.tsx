@@ -44,7 +44,7 @@ export const PresetProviderPanel: React.FC<Props<ElementType>> = ({
 }) => {
 	const { list, putPreset, removePreset } = usePresets();
 	React.useEffect(() => {
-		if (list && list[0]) {
+		if (list?.[0]) {
 			onLoad(list[0]);
 		}
 	}, [onLoad, list]);
@@ -64,7 +64,7 @@ export const PresetProviderPanel: React.FC<Props<ElementType>> = ({
 		<div className="flex gap-2">
 			<div className="flex">
 				<Button size="icon" variant="outline" disabled>
-					<SyncIcon rotate={!list ? 180 : 0} />
+					<SyncIcon rotate={list ? 0 : 180} />
 				</Button>
 				{list ? (
 					<Select onValueChange={setSelectedId} value={selectedId}>
@@ -121,7 +121,7 @@ export const PresetProviderPanel: React.FC<Props<ElementType>> = ({
 						<Button
 							size="icon"
 							variant="destructive"
-							disabled={!selectedId}
+							disabled={selectedId === undefined}
 							title="Удалить"
 						>
 							<DeleteIcon />
@@ -137,7 +137,7 @@ export const PresetProviderPanel: React.FC<Props<ElementType>> = ({
 							<AlertDialogCancel onClick={closeDeleteDialog}>
 								Нет
 							</AlertDialogCancel>
-							{/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
+							{/* oxlint-disable-next-line typescript/no-non-null-assertion */}
 							<AlertDialogAction onClick={() => removePreset(selectedId!)}>
 								Да
 							</AlertDialogAction>

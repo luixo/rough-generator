@@ -52,6 +52,8 @@ export const NumberWithVariation: React.FC<Props> = ({
 		isFirstMountState,
 		setState,
 		isVariationFixed,
+		// This is expected, we rerender value because of the forced counter
+		// oxlint-disable-next-line react/exhaustive-effect-dependencies
 		roughContext.forcedCounter,
 	]);
 

@@ -4,257 +4,257 @@ import { useStore } from "@tanstack/react-store";
 import { keys } from "remeda";
 
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
 import { type CanvasRenderer, RoughContext } from "@/contexts/rough-context";
 import {
-  Circle,
-  getInitialState as getInitialCircleState,
+	Circle,
+	getInitialState as getInitialCircleState,
 } from "@/elements/circle";
 import {
-  DoubleCircle,
-  getInitialState as getInitialDoubleCircleState,
+	DoubleCircle,
+	getInitialState as getInitialDoubleCircleState,
 } from "@/elements/double-circle";
 import {
-  Spring,
-  getInitialState as getInitialSpringState,
+	Spring,
+	getInitialState as getInitialSpringState,
 } from "@/elements/spring";
 import { useBooleanState } from "@/hooks/use-boolean-state";
 import { useElementControl } from "@/hooks/use-element-control";
 import { canvasSizeStore } from "@/state/settings";
 import type {
-  ElementPropsMapping,
-  ElementType,
-  GetInitialState,
+	ElementPropsMapping,
+	ElementType,
+	GetInitialState,
 } from "@/types/element-types";
 import { PresetProviderPanel } from "@/views/preset-provider-panel";
 
 const elementsRecord: Record<ElementType, true> = {
-  circle: true,
-  "double-circle": true,
-  spring: true,
+	circle: true,
+	"double-circle": true,
+	spring: true,
 };
 const elementTypes = keys(elementsRecord);
 
 const getNameByType = (type: ElementType): string => {
-  switch (type) {
-    case "circle":
-      return "круг";
-    case "double-circle":
-      return "обода";
-    case "spring":
-      return "пружинка";
-  }
+	switch (type) {
+		case "circle":
+			return "круг";
+		case "double-circle":
+			return "обода";
+		case "spring":
+			return "пружинка";
+	}
 };
 
 const getInitialStateByType = (type: ElementType) => {
-  switch (type) {
-    case "circle":
-      return getInitialCircleState as GetInitialState<
-        ElementPropsMapping["circle"]
-      >;
-    case "double-circle":
-      return getInitialDoubleCircleState as GetInitialState<
-        ElementPropsMapping["double-circle"]
-      >;
-    case "spring":
-      return getInitialSpringState as GetInitialState<
-        ElementPropsMapping["spring"]
-      >;
-  }
+	switch (type) {
+		case "circle":
+			return getInitialCircleState as GetInitialState<
+				ElementPropsMapping["circle"]
+			>;
+		case "double-circle":
+			return getInitialDoubleCircleState as GetInitialState<
+				ElementPropsMapping["double-circle"]
+			>;
+		case "spring":
+			return getInitialSpringState as GetInitialState<
+				ElementPropsMapping["spring"]
+			>;
+	}
 };
 
 const getRenderedByType = (type: ElementType) => {
-  switch (type) {
-    case "circle":
-      return Circle.renderFigure;
-    case "double-circle":
-      return DoubleCircle.renderFigure;
-    case "spring":
-      return Spring.renderFigure;
-  }
+	switch (type) {
+		case "circle":
+			return Circle.renderFigure;
+		case "double-circle":
+			return DoubleCircle.renderFigure;
+		case "spring":
+			return Spring.renderFigure;
+	}
 };
 
 const getComponentByType = (type: ElementType) => {
-  switch (type) {
-    case "circle":
-      return Circle;
-    case "double-circle":
-      return DoubleCircle;
-    case "spring":
-      return Spring;
-  }
+	switch (type) {
+		case "circle":
+			return Circle;
+		case "double-circle":
+			return DoubleCircle;
+		case "spring":
+			return Spring;
+	}
 };
 
 type RenderedElementProps<T extends ElementType> = {
-  id: string;
-  data: ElementPropsMapping[T];
-  modifyElementById: (
-    id: string,
-    action: React.SetStateAction<ElementPropsMapping[T]>,
-  ) => void;
-  deleteElementById: (id: string) => void;
+	id: string;
+	data: ElementPropsMapping[T];
+	modifyElementById: (
+		id: string,
+		action: React.SetStateAction<ElementPropsMapping[T]>,
+	) => void;
+	deleteElementById: (id: string) => void;
 };
 
 const RenderedElement = <T extends ElementType>({
-  data,
-  id,
-  modifyElementById,
-  deleteElementById,
+	data,
+	id,
+	modifyElementById,
+	deleteElementById,
 }: RenderedElementProps<T>) => {
-  const [
-    removeDialogOpen,
-    {
-      switchValue: setRemoveDialogOpen,
-      setTrue: openRemoveDialog,
-      setFalse: closeRemoveDialog,
-    },
-  ] = useBooleanState();
-  const Component = getComponentByType(data.type);
-  const setState = React.useCallback(
-    (setStateAction: React.SetStateAction<ElementPropsMapping[T]>) => {
-      modifyElementById(id, setStateAction);
-    },
-    [id, modifyElementById],
-  ) as React.Dispatch<React.SetStateAction<ElementPropsMapping[T]>>;
-  const deleteElement = React.useCallback(
-    () => deleteElementById(id),
-    [id, deleteElementById],
-  );
-  const props = {
-    ...data,
-    setState,
-    onRemoveDialogOpen: openRemoveDialog,
-  } as unknown as React.ComponentProps<typeof Component>;
-  return (
-    <>
-      {/* @ts-expect-error This is weird */}
-      <Component key={id} {...props} />
-      <AlertDialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Вы точно хотите удалить {getNameByType(data.type)} {data.title}?
-            </AlertDialogTitle>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={closeRemoveDialog}>
-              Нет
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={deleteElement}>Да</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
-  );
+	const [
+		removeDialogOpen,
+		{
+			switchValue: setRemoveDialogOpen,
+			setTrue: openRemoveDialog,
+			setFalse: closeRemoveDialog,
+		},
+	] = useBooleanState();
+	const Component = getComponentByType(data.type);
+	const setState = React.useCallback(
+		(setStateAction: React.SetStateAction<ElementPropsMapping[T]>) => {
+			modifyElementById(id, setStateAction);
+		},
+		[id, modifyElementById],
+	) as React.Dispatch<React.SetStateAction<ElementPropsMapping[T]>>;
+	const deleteElement = React.useCallback(
+		() => deleteElementById(id),
+		[id, deleteElementById],
+	);
+	const props = {
+		...data,
+		setState,
+		onRemoveDialogOpen: openRemoveDialog,
+	} as unknown as React.ComponentProps<typeof Component>;
+	return (
+		<>
+			{/* @ts-expect-error This is weird */}
+			<Component key={id} {...props} />
+			<AlertDialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>
+							Вы точно хотите удалить {getNameByType(data.type)} {data.title}?
+						</AlertDialogTitle>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel onClick={closeRemoveDialog}>
+							Нет
+						</AlertDialogCancel>
+						<AlertDialogAction onClick={deleteElement}>Да</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+		</>
+	);
 };
 
 export const ControlPanel: React.FC = () => {
-  const roughContext = React.useContext(RoughContext);
-  const [selectedElementType, setSelectedElementType] =
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    React.useState<ElementType>(elementTypes[0]!);
-  const {
-    elements,
-    preset,
-    createElement,
-    deleteElementById,
-    modifyElementById,
-    overwrite,
-    reset,
-  } = useElementControl(
-    // TODO: fix
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getInitialStateByType as any,
-  );
-  const canvasSize = useStore(canvasSizeStore);
+	const roughContext = React.useContext(RoughContext);
+	const [selectedElementType, setSelectedElementType] =
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		React.useState<ElementType>(elementTypes[0]!);
+	const {
+		elements,
+		preset,
+		createElement,
+		deleteElementById,
+		modifyElementById,
+		overwrite,
+		reset,
+	} = useElementControl(
+		// TODO: fix
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		getInitialStateByType as any,
+	);
+	const canvasSize = useStore(canvasSizeStore);
 
-  const renderers: CanvasRenderer[] = React.useMemo(
-    () =>
-      elements.map(
-        (element) => (canvas) =>
-          getRenderedByType(element.data.type)(
-            canvas,
-            element.data as never,
-            canvasSize,
-          ),
-      ),
-    [elements, canvasSize],
-  );
+	const renderers: CanvasRenderer[] = React.useMemo(
+		() =>
+			elements.map(
+				(element) => (canvas) =>
+					getRenderedByType(element.data.type)(
+						canvas,
+						element.data as never,
+						canvasSize,
+					),
+			),
+		[elements, canvasSize],
+	);
 
-  React.useEffect(() => {
-    const rendererCancelHandle = renderers.map(roughContext.addRenderer);
-    return () => {
-      rendererCancelHandle.map((cancelHandle) => cancelHandle());
-    };
-  }, [renderers, roughContext.addRenderer]);
+	React.useEffect(() => {
+		const rendererCancelHandle = renderers.map(roughContext.addRenderer);
+		return () => {
+			rendererCancelHandle.map((cancelHandle) => cancelHandle());
+		};
+	}, [renderers, roughContext.addRenderer]);
 
-  return (
-    <div className="flex w-full flex-col gap-2 p-4">
-      {preset ? (
-        <div>
-          <PresetProviderPanel
-            currentPreset={preset}
-            onLoad={overwrite}
-            onReset={reset}
-          />
-        </div>
-      ) : null}
-      <div className="flex flex-col gap-2">
-        <div className="flex gap-2">
-          <Select
-            onValueChange={(type) =>
-              setSelectedElementType(type as ElementType)
-            }
-            value={selectedElementType}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Выбери элемент" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {elementTypes.map((elementType) => (
-                  <SelectItem key={elementType} value={elementType}>
-                    {getNameByType(elementType)}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Button
-            onClick={() => createElement(selectedElementType)}
-            title="Добавить"
-          >
-            Добавить
-          </Button>
-        </div>
-        <div className="flex flex-col flex-wrap justify-center gap-2">
-          {elements.map((element) => (
-            <RenderedElement
-              key={element.id}
-              id={element.id}
-              data={element.data}
-              modifyElementById={modifyElementById}
-              deleteElementById={deleteElementById}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+	return (
+		<div className="flex w-full flex-col gap-2 p-4">
+			{preset ? (
+				<div>
+					<PresetProviderPanel
+						currentPreset={preset}
+						onLoad={overwrite}
+						onReset={reset}
+					/>
+				</div>
+			) : null}
+			<div className="flex flex-col gap-2">
+				<div className="flex gap-2">
+					<Select
+						onValueChange={(type) =>
+							setSelectedElementType(type as ElementType)
+						}
+						value={selectedElementType}
+					>
+						<SelectTrigger>
+							<SelectValue placeholder="Выбери элемент" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								{elementTypes.map((elementType) => (
+									<SelectItem key={elementType} value={elementType}>
+										{getNameByType(elementType)}
+									</SelectItem>
+								))}
+							</SelectGroup>
+						</SelectContent>
+					</Select>
+					<Button
+						onClick={() => createElement(selectedElementType)}
+						title="Добавить"
+					>
+						Добавить
+					</Button>
+				</div>
+				<div className="flex flex-col flex-wrap justify-center gap-2">
+					{elements.map((element) => (
+						<RenderedElement
+							key={element.id}
+							id={element.id}
+							data={element.data}
+							modifyElementById={modifyElementById}
+							deleteElementById={deleteElementById}
+						/>
+					))}
+				</div>
+			</div>
+		</div>
+	);
 };

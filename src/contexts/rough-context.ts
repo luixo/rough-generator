@@ -5,22 +5,22 @@ import type roughjs from "roughjs";
 
 export type RoughCanvas = ReturnType<typeof roughjs.canvas>;
 export type RoughConfig = NonNullable<
-  Parameters<typeof roughjs.generator>[number]
+	Parameters<typeof roughjs.generator>[number]
 >["options"];
 export type CanvasRenderer = (roughCanvas: RoughCanvas) => void;
 
 type RemoveRenderer = () => void;
 
 type RoughContextType = {
-  addRenderer: (renderer: CanvasRenderer) => RemoveRenderer;
-  forceRefresh: () => void;
-  forcedCounter: number;
+	addRenderer: (renderer: CanvasRenderer) => RemoveRenderer;
+	forceRefresh: () => void;
+	forcedCounter: number;
 };
 
 const noop = doNothing();
 
 export const RoughContext = React.createContext<RoughContextType>({
-  addRenderer: () => noop,
-  forceRefresh: noop,
-  forcedCounter: 0,
+	addRenderer: () => noop,
+	forceRefresh: noop,
+	forcedCounter: 0,
 });

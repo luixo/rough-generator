@@ -16,3 +16,11 @@ bun install --frozen-lockfile
 ```sh
 bun run dev
 ```
+
+### Checks
+
+```sh
+bun run format
+bun run lint
+bun run typecheck
+```

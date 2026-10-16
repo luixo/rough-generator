@@ -4,13 +4,13 @@ import { defineConfig } from "vite";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  plugins: [
-    viteTsConfigPaths(),
-    react({
-      babel: {
-        plugins: ["babel-plugin-react-compiler"],
-      },
-    }),
-    tailwindcss(),
-  ],
+	plugins: [
+		viteTsConfigPaths(),
+		react({
+			babel: {
+				plugins: ["babel-plugin-react-compiler"],
+			},
+		}),
+		tailwindcss(),
+	],
 });

@@ -7,19 +7,10 @@
     "build": "vite build",
     "dev": "vite",
     "format": "prettier --write .",
+    "lint-staged": "lint-staged",
     "lint": "eslint --max-warnings=0 .",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
-  },
-  "pre-commit": [
-    "typecheck",
-    "lint-staged"
-  ],
-  "lint-staged": {
-    "*.{j,t}s{,x}": [
-      "prettier --write",
-      "eslint --max-warnings=0 --fix"
-    ]
+    "typecheck": "bun check"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",
@@ -75,5 +66,21 @@
     "vite": "^7.1.2",
     "vite-tsconfig-paths": "^5.1.4"
   },
-  "packageManager": "yarn@4.9.2+sha512.1fc009bc09d13cfd0e19efa44cbfc2b9cf6ca61482725eb35bbc5e257e093ebf4130db6dfe15d604ff4b79efd8e1e8e99b25fa7d0a6197c9f9826358d4d65c3c"
+  "lint-staged": {
+    "*.{j,t}s{,x}": [
+      "eslint --max-warnings=0 --fix"
+    ]
+  },
+  "pre-commit": [
+    "typecheck",
+    "format",
+    "lint-staged"
+  ],
+  "engines": {
+    "node": "26"
+  },
+  "packageManager": "bun@1.4.3",
+  "trustedDependencies": [
+    "pre-commit"
+  ]
 }
